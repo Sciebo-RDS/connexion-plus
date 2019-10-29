@@ -42,6 +42,19 @@ app = connexion.App(__name__)
 conn.addServices(app, use_tracer=jaeger_tracer)
 ```
 
+If you use the tracer, you get also the TracingHandler in your Logger under the empty name.
+```python
+logging.getLogger('')
+```
+
+You can edit the logging-level with the `use_logging_level`-parameter of the addServices-method. DEBUG is the default level, so you get everything from the log within a route in your opentracing-ui. (As long as there are a span while you write a logging message, you will see the logging message in your span)
+```python
+import logging
+conn.addServices(app, use_tracer=config.initialize_tracer(), use_logging_level=logging.DEBUG)
+```
+
+It improve the performance slightly, when you lower the log-level.
+
 ## Prometheus / Metrics
 
 Currently, it is only the [prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/) supported for connexion, so only for flask connexion. You only have to set the `metrics`-parameter to `True`

@@ -1,8 +1,8 @@
 name = "connexion-plus"
 
-#from .Factory import Factory
+import logging
 
-def addServices(app, use_tracer=None, use_metric=False):
+def addServices(app, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG):
     metrics = None
     tracing = None
 
@@ -20,5 +20,13 @@ def addServices(app, use_tracer=None, use_metric=False):
         # add tracer to everything to support spans through multiple microservices via rpc-calls
         from opentracing_instrumentation.client_hooks import install_all_patches
         install_all_patches()
+
+        # add a TracingHandler for Logging
+        from .TracingHandler import TracingHandler
+
+        th = TracingHandler(use_tracer)
+        th.setLevel(use_logging_level)
+
+        logging.getLogger('').addHandler(th)
 
     return tracing, metrics
