@@ -4,9 +4,9 @@ logger = logging.getLogger('')
 
 
 class Factory():
-    def __init__(self, app, api, tracer=None, metrics=False):
+    def __init__(self, app, tracer=None, metrics=False):
         self.app = app
-        self.api = api
+        self.api = app.api_cls
 
         if tracer is not None:
             logger.debug("add tracer")
