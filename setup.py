@@ -23,7 +23,8 @@ setup(
           'jaeger-client',
           'prometheus-flask-exporter',
           'requests',
-          'opentracing-instrumentation'
+          'opentracing-instrumentation',
+          'Flask-Opentracing'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      
