@@ -13,7 +13,9 @@ import connexion_plus
 
 ## OpenTracing
 
-Currently it is only supported the opentracing implementation of [jaeger-client](https://pypi.org/project/jaeger-client/). If you want to use it, you have to initialize the client before you start your connexion app and give it via the `tracer`-parameter to the `connexion_plus` Factory, where the magic happens.
+Currently, all opentracing implementation (e.g. [jaeger-client](https://pypi.org/project/jaeger-client/)) are supported for tracing. If you want to use it, you have to initialize the client before you start your connexion app and give it via the `tracer`-parameter to the `connexion_plus` Factory, where the magic happens.
+
+The following example uses jaeger-client (`pip install jaeger-client`) implementation.
 
 ```python
 import connexion_plus
