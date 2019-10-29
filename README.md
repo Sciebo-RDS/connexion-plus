@@ -62,3 +62,5 @@ app = connexion.App(__name__)
 connexion_plus.Factory(app, tracer=jaeger_tracer, metrics=True)
 ```
 
+If you add the line `metrics_factory=PrometheusMetricsFactory(namespace='yourAppName')` to your jaeger-client-config, you get the metrics out of jaeger to your flask app.
+

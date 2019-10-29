@@ -15,6 +15,7 @@ def TracerDecorator(func, tracer):
                 request = args[3]
         else:
             response = args[0]
+            
             try:
                 mimetype = args[1]
             except IndexError as e:
@@ -38,7 +39,10 @@ def TracerDecorator(func, tracer):
             path = urlparse(request.url).path
 
             scope = tracer.start_span(request.method + "_" + path, child_of=span_ctx, tags=span_tags)
-            scope.log_kv({"request": request})
+            scope.set_tag(tags.HTTP_METHOD, request.method)
+            scope.set_tag(tags.HTTP_URL, request.url)
+
+            scope.log_kv({"request": str(vars(request))})
         else:
             scope = tracer.start_span("NO_REQUEST_CONTEXT")
 

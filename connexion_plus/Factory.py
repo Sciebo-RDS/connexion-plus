@@ -1,5 +1,5 @@
 import logging
-
+from .Util import set_tracer
 logger = logging.getLogger('')
 
 
@@ -9,6 +9,7 @@ class Factory():
         self.api = app.api_cls
 
         if tracer is not None:
+            set_tracer(tracer)
             logger.debug("add tracer")
             self.addTracer(tracer)
 

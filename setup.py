@@ -21,7 +21,9 @@ setup(
   install_requires=[    
           'connexion',
           'jaeger-client',
-          'prometheus-flask-exporter'
+          'prometheus-flask-exporter',
+          'requests',
+          'opentracing-instrumentation'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      
