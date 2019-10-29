@@ -17,7 +17,7 @@ def addServices(app, use_tracer=None, use_metric=False):
         from flask_opentracing import FlaskTracing
         tracing = FlaskTracing(use_tracer, True, app.app)
         
-        # add tracer to everything to support spans through microservice rpc-calls
+        # add tracer to everything to support spans through multiple microservices via rpc-calls
         from opentracing_instrumentation.client_hooks import install_all_patches
         install_all_patches()
 

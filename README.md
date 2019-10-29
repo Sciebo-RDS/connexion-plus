@@ -8,14 +8,13 @@ If you want to know more about the used libraries, please go to the correspondin
 
 ## Dependencies
 
-```bash
-[Connexion](https://github.com/zalando/connexion)
-[opentracing-python-instrumentation](https://github.com/uber-common/opentracing-python-instrumentation)
-[Flask-Opentracing](https://github.com/opentracing-contrib/python-flask)
-[jaeger-client](https://pypi.org/project/jaeger-client/)
-[requests](https://pypi.org/project/requests/)
-[prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/)
-```
+- [Connexion](https://github.com/zalando/connexion)
+- [opentracing-python-instrumentation](https://github.com/uber-common/opentracing-python-instrumentation)
+- [Flask-Opentracing](https://github.com/opentracing-contrib/python-flask)
+- [jaeger-client](https://pypi.org/project/jaeger-client/)
+- [requests](https://pypi.org/project/requests/)
+- [prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/)
+
 
 ## Importing
 ```python
