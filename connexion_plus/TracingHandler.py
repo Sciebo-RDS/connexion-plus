@@ -1,8 +1,8 @@
-from logging import StreamHandler
+import logging
 
-class TracingHandler(StreamHandler):
+class TracingHandler(logging.StreamHandler):
     def __init__(self, use_tracer):
-        StreamHandler.__init__(self)
+        logging.StreamHandler.__init__(self)
         self.tracer = use_tracer
 
     def emit(self, record):
@@ -11,5 +11,5 @@ class TracingHandler(StreamHandler):
         
         if span is not None:
             msg = self.format(record)
-            span.log_kv({"event": msg})
+            span.log_kv({logging.getLevelName(record.levelno): msg})
 
