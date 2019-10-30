@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/connexion-plus.svg)](https://badge.fury.io/py/connexion-plus)
+
 [Connexion](https://github.com/zalando/connexion) with benefits for microservices.
 
 # Connexion Plus
