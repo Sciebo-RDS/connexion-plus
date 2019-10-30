@@ -96,3 +96,7 @@ app.add_api('openapi.yaml', resolver=RestyResolver('api'))
 
 If you add the line `metrics_factory=PrometheusMetricsFactory(namespace='yourAppName')` to your jaeger-client-config, you get the metrics out of jaeger into your flask app to track all metrics at once `/metrics`.
 
+## Research data services
+
+This library is under development for the project [research data services](http://research-data-services.info), a microservice ecosystem.
+
