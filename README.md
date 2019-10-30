@@ -6,7 +6,7 @@
 
 If you want to use [Connexion](https://github.com/zalando/connexion) for your microservice, you have to add an [opentracing](https://opentracing.io/) or [prometheus](https://prometheus.io/) client on your own. With this library, you instantiate everything before your connexion app starts and this library will take care to put it all together, so you get everything fine.
 
-This library give you a new class `TracingApp`, which you have to use instead of the connexion FlaskApp, to get everything working.
+This library give you a new class `App`, which you have to use instead of the connexion FlaskApp, to get everything working. The App inheritates from connexion app, so you can use it with your old code, but replace your import with `from connexion_plus import App`.
 
 If you want to know more about the used libraries, please go to the corresponding documentaries.
 
@@ -22,7 +22,7 @@ If you want to know more about the used libraries, please go to the correspondin
 
 ## Importing
 ```python
-from connexion_plus import TracingApp
+from connexion_plus import App
 ```
 
 ## OpenTracing / Jaeger-Client
@@ -60,8 +60,6 @@ app = App(app, use_tracer=config.initialize_tracer(), use_logging_level=logging.
 ```
 
 It improve the performance slightly, when you set the log-level to a higher level (INFO, WARNING).
-
-The App inheritates from connexion app, so you can use it like the connexion application. In the following code snippets, you can see the usage of this app.
 
 ## Prometheus / Metrics
 
