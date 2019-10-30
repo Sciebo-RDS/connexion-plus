@@ -40,7 +40,7 @@ config = jConfig(
     )
 jaeger_tracer = config.initialize_tracer()
 
-app = TracingApp(__name__, use_tracer=jaeger_tracer)
+app = App(__name__, use_tracer=jaeger_tracer)
 ```
 
 If you use the tracer, you get also the TracingHandler in your Logger under the empty name.
@@ -51,7 +51,9 @@ logging.getLogger('')
 You can edit the logging-level with the `use_logging_level`-parameter of the addServices-method. DEBUG is the default level, so you get everything from the log within a route in your opentracing-ui. (As long as there are a span while you write a logging message, you will see the logging message in your span)
 ```python
 import logging
-conn.addServices(app, use_tracer=config.initialize_tracer(), use_logging_level=logging.DEBUG)
+from connexion_plus import App
+
+app = App(app, use_tracer=config.initialize_tracer(), use_logging_level=logging.DEBUG)
 ```
 
 It improve the performance slightly, when you lower the log-level.
