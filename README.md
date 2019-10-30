@@ -25,7 +25,7 @@ from connexion_plus import TracingApp
 
 ## OpenTracing / Jaeger-Client
 
-Currently, all opentracing implementation (e.g. [jaeger-client](https://pypi.org/project/jaeger-client/)) are supported for tracing. But this library use a third party function, that only supports Flask. If you want to use it, you have to initialize the client before you start your connexion app and give it via the `tracer`-parameter to the `connexion_plus` addService, where the magic happens.
+Currently, all opentracing implementation (e.g. [jaeger-client](https://pypi.org/project/jaeger-client/)) are supported for tracing. But this library use a third party function, that only supports Flask. If you want to use it, you have to initialize the client before you start your connexion app and give it via the `tracer`-parameter to the `connexion_plus` App, where the magic happens.
 
 The following example uses jaeger-client (`pip install jaeger-client`) implementation.
 
@@ -43,7 +43,8 @@ jaeger_tracer = config.initialize_tracer()
 app = App(__name__, use_tracer=jaeger_tracer)
 ```
 
-If you use the tracer, you get also the TracingHandler in your Logger under the empty name.
+If you use the tracer, you get also a TracingHandler in your logging module under the empty name, so your logging message can be logged with opentracing.
+
 ```python
 logging.getLogger('')
 ```
@@ -56,7 +57,9 @@ from connexion_plus import App
 app = App(app, use_tracer=config.initialize_tracer(), use_logging_level=logging.DEBUG)
 ```
 
-It improve the performance slightly, when you lower the log-level.
+It improve the performance slightly, when you set the log-level to a higher level (INFO, WARNING).
+
+The App inheritates from connexion app, so you can use it like the connexion application. In the following code snippets, you can see the usage of this app.
 
 ## Prometheus / Metrics
 
