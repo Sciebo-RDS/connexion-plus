@@ -109,7 +109,7 @@ If you get a collision of your view-functions, you can use from `from connexion-
 
 ## Examples
 
-You can find examples in the [repo](https://github.com/Heiss/connexion-plus/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
+You can find more examples in the [repo](https://github.com/Heiss/connexion-plus/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
 
 Please use *Tutorial2* if you want a complete usage example.
 
