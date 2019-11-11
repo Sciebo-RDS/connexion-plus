@@ -1,7 +1,27 @@
 import re, string
-from connexion.resolver import RestyResolver
+import sys
+from connexion.resolver import RestyResolver, Resolution
+from connexion.exceptions import ResolverError
 
 class MultipleResourceResolver(RestyResolver):
+    def resolve(self, operation):
+        """
+        Default operation resolver
+        :type operation: connexion.operations.AbstractOperation
+        """
+
+        # set randomizer to not collide endpoint_names, so that parameters for resources are possible.
+        # Otherwise the following example collides:
+        #   /res1 [GET] and /res1/{id} [GET]
+        operation._randomize_endpoint = 2
+
+        operation_id = self.resolve_operation_id(operation)
+        try:
+            return Resolution(self.resolve_function_from_operation_id(operation_id), operation_id)
+        except ResolverError:
+            return Resolution(self.resolve_function_from_operation_id(operation_id.lower()), operation_id)
+            
+
     def resolve_operation_id_using_rest_semantics(self, operation):
         """
         Resolves the operationId using REST semantics without collision for longer paths with multiple ressources
@@ -49,3 +69,4 @@ class MultipleResourceResolver(RestyResolver):
             return self.collection_endpoint_name if is_collection_endpoint else method.lower()
 
         return '{}.{}'.format(get_controller_name(), get_function_name())
+
