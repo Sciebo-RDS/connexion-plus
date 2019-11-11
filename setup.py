@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
   name = 'connexion-plus',      
   packages = ['connexion_plus'], 
-  version = '0.7',
+  version = '0.9',
   license='MIT', 
   description = 'Connexion with benefits for microservices',
   long_description=readme,
@@ -15,7 +15,6 @@ setup(
   author = 'Peter Heiss',
   author_email = 'peter.heiss@uni-muenster.de',
   url = 'https://github.com/Heiss/connexion-plus',
-  download_url = 'https://github.com/Heiss/connexion-plus/archive/0.1.tar.gz',
   keywords = ['connexion', 'microservice', 'tracing', 'prometheus', 'jaeger'],
   python_requires='>=3.6',
   install_requires=[    
