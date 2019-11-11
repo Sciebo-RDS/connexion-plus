@@ -1,7 +1,7 @@
 import re, string
 from connexion.resolver import RestyResolver
 
-class MultipleResourceViewResolver(RestyResolver):
+class MultipleResourceResolver(RestyResolver):
     def resolve_operation_id_using_rest_semantics(self, operation):
         """
         Resolves the operationId using REST semantics without collision for longer paths with multiple ressources
@@ -19,7 +19,7 @@ class MultipleResourceViewResolver(RestyResolver):
             resource_name = ''
             # split path at slash to separate every parameter
             split = re.split("/", operation.path)
-            for split as s:
+            for s in split:
                 # find the parameter, where a variable was defined to exlude it in resource_name
                 pattern = re.compile(r"\{[a-zA-Z-_]+\}")
                 if not s and pattern.search(s) is None:
