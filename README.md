@@ -96,7 +96,23 @@ app.add_api('openapi.yaml', resolver=RestyResolver('api'))
 
 If you add the line `metrics_factory=PrometheusMetricsFactory(namespace='yourAppName')` to your jaeger-client-config, you get the metrics out of jaeger into your flask app to track all metrics at once `/metrics`.
 
+## More features
+
+If you want to get the current tracing object in a request context, you can use [FlaskTracing](https://github.com/opentracing-contrib/python-flask#accessing-spans-manually)
+
+```python
+import Flasktracing
+FlaskTracing.get_span(request)
+```
+
+If you get a collision of your view-functions, you can use from `from connexion-plus.MultipleResourceResolver import MultipleResourceResolver` as a replacement for RestyResolver to get better control of multi resource path e.g. /resource1/{id1}/resource2/{id2} tries to find the classes *Resource1Resource2* or *resource1resource2* in the given "api" folder.
+
+## Examples
+
+You can find examples in the [repo](https://github.com/Heiss/connexion-plus/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
+
+Please use *Tutorial2* if you want a complete usage example.
+
 ## Research data services
 
 This library is under development for the project [research data services](http://research-data-services.info), a microservice ecosystem.
-
