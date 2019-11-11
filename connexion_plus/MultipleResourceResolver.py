@@ -26,7 +26,7 @@ class MultipleResourceResolver(RestyResolver):
             for s in split:
                 # find the parameter, where a variable was defined to exlude it in resource_name
                 pattern = re.compile(r"\{[a-zA-Z-_]+\}")
-                if not s and pattern.search(s) is None:
+                if s and pattern.search(s) is None:
                     resource_name += s.title()
 
             if x_router_controller:
