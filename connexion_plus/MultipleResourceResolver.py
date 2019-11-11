@@ -1,7 +1,7 @@
 import re, string
-from connexion.resolver import MethodViewResolver
+from connexion.resolver import RestyResolver
 
-class MultipleResourceViewResolver(MethodViewResolver):
+class MultipleResourceViewResolver(RestyResolver):
     def resolve_operation_id_using_rest_semantics(self, operation):
         """
         Resolves the operationId using REST semantics without collision for longer paths with multiple ressources
