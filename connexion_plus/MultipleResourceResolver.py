@@ -7,6 +7,9 @@ class MultipleResourceResolver(RestyResolver):
         Resolves the operationId using REST semantics without collision for longer paths with multiple ressources
         :type operation: connexion.operations.AbstractOperation
         """
+        path_match = re.search(
+            r'^/?(?P<resource_name>([\w\-](?<!/))*)(?P<trailing_slash>/*)(?P<extended_path>.*)$', operation.path
+        )
 
         def get_controller_name():
             x_router_controller = operation.router_controller
@@ -16,6 +19,7 @@ class MultipleResourceResolver(RestyResolver):
 
             # empty name to append to
 
+            name = self.default_module_name
             resource_name = ''
             # split path at slash to separate every parameter
             split = re.split("/", operation.path)
