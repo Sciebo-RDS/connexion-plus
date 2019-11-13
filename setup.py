@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
   name = 'connexion-plus',      
   packages = ['connexion_plus'], 
-  version = '0.14',
+  version = '0.15',
   license='MIT', 
   description = 'Connexion with benefits for microservices',
   long_description=readme,
@@ -23,7 +23,8 @@ setup(
           'prometheus-flask-exporter',
           'requests',
           'opentracing-instrumentation',
-          'Flask-Opentracing'
+          'Flask-Opentracing',
+          'htmlmin'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      

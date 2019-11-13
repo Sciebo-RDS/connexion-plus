@@ -6,6 +6,8 @@
 
 If you want to use [Connexion](https://github.com/zalando/connexion) for your microservice, you have to add an [opentracing](https://opentracing.io/) or [prometheus](https://prometheus.io/) client on your own. With this library, you instantiate everything before your connexion app starts and this library will take care to put it all together, so you get everything fine.
 
+> Currently this library works only for Flask!
+
 This library give you a new class `App`, which you have to use instead of the connexion FlaskApp, to get everything working. The App inheritates from connexion app, so you can use it with your old code, but replace your import with `from connexion_plus import App`.
 
 If you want to know more about the used libraries, please go to the corresponding documentaries.

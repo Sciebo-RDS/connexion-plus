@@ -4,16 +4,26 @@ from flask import Flask
 from connexion import FlaskApp
 
 class App(FlaskApp):
-    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG):
+    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG, use_optimizer=None):
         super().__init__(name)
         logger = logging.getLogger("")
 
         self.metrics = None
         self.tracing = None
+        self.optimize = None
 
-        if not isinstance(self.app, Flask):
+        if not isinstance(self.app, (Flask, FlaskApp)):
             logger.warning("Given App is not flask, so it cannot get any functionality added from this lib currently.")
             return
+
+        if use_optimizer is not None:
+            from .Optimizer import FlaskOptimize
+            
+            config = {"compress": True, "minify": True}
+            if isinstance(use_optimizer, dict):
+                config = use_optimizer
+
+            self.optimize = FlaskOptimize(self.app, config)
 
         # add prometheus
         if use_metric:
@@ -37,4 +47,6 @@ class App(FlaskApp):
             th.setLevel(use_logging_level)
 
             logging.getLogger('').addHandler(th)
+
+        logger.info("Microservice additional functionalities configured successfully by Connexion-Plus.")
 
