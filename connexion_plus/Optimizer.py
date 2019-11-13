@@ -1,4 +1,4 @@
-# stolen from https://github.com/sunary/flask-optimize/blob/b4421c166fd61b357a9666f34ffb1370bffff7e3/flask_optimize/optimize.py
+# inspired by and partly stolen from https://github.com/sunary/flask-optimize/blob/b4421c166fd61b357a9666f34ffb1370bffff7e3/flask_optimize/optimize.py
 
 import sys
 import gzip
