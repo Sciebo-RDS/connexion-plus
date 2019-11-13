@@ -7,6 +7,9 @@ from htmlmin.main import minify
 from flask import request, Response, make_response, current_app, json, wrappers
 from functools import update_wrapper, wraps
 from flask import Flask
+import logging
+
+logger = logging.getLogger('')
 
 IS_PYTHON_3 = True
 if sys.version_info[0] < 3:
@@ -23,19 +26,22 @@ class FlaskOptimize(object):
 
     def __init__(self, app, config=None):
         """
-        Global config for flask optimize
+        Global config for flask optimize. 
 
         Cache have to enabled manually per function with decorator #set_cache_timeout
         Args:
             config: global configure values
         """
+        logger.info("Initialize FlaskOptimize...")
         if config is None:
             config = {
-                "compress": compress,
-                "minify": minify
+                "compress": True,
+                "minify": True
             }
+        logger.info("Optimizer config: {}".format(config))
 
         self.config = config
+        self.init_app(app)
 
     def init_app(self, app):
         def before_request():
@@ -43,7 +49,7 @@ class FlaskOptimize(object):
             pass
 
         def after_request(response):
-            self.optimize_response(response)
+            return self.optimize_response(response)
 
         app.before_request(before_request)
         app.after_request(after_request)
@@ -116,7 +122,7 @@ class FlaskOptimize(object):
         resp = response
 
         #self.clear_timestamps()
-        period_cache = request.opt_cache_timeout if request.opt_cache_timeout else 0
+        period_cache = request.opt_cache_timeout if hasattr(request, "opt_cache_timeout") and isinstance(request.opt_cache_timeout, int) else 0
 
         # init cached data
         now = time.time()
@@ -124,24 +130,30 @@ class FlaskOptimize(object):
 
         # if cache entry found, return it.
         if period_cache > 0 and self._timestamp.get(key_cache) and self._timestamp.get(key_cache) > now:
+            logger.debug("Optimizer: Response from cache. Valid for {}s.".format(int(self._timestamp.get(key_cache) - now)))
             return self._cache[key_cache]
 
         #resp = func(*args, **kwargs)
 
+        # FIXME: remove this, because we use flask-cors
         # crossdomain
-        if resp.mimetype.endswith('json'):
-            resp = self.crossdomain(resp)
+        #if resp.mimetype.endswith('json'):
+        #    logger.debug("Optimizer: JSON found. Crossdomain added.")
+        #    resp = self.crossdomain(resp)
 
         # minify html, if its not suppressed
         if (self.config["minify"] and not hasattr(request, "opt_do_not_minify")) and resp.mimetype.endswith("html"):
-            resp.set_data(self.validate(self.minifier, resp))
+            logger.debug("Optimizer: minify HTML response.")
+            resp = self.validate(self.minifier, resp)
 
         # compress, if its not suppressed
         if (self.config["compress"] and not hasattr(request, "opt_do_not_compress")):
+            logger.debug("Optimizer: compress response.")
             resp = self.validate(self.compress, resp)
 
         # period_cache is bigger then 0, if request.opt_cache_timeout was set.
         if period_cache > 0:
+            logger.debug("Optimizer: response cached.")
             self._cache[key_cache] = resp
             self._timestamp[key_cache] = now + period_cache
 
@@ -166,10 +178,13 @@ class FlaskOptimize(object):
         if not IS_PYTHON_3 and isinstance(content, str):
             content = unicode(content, 'utf-8')
 
-        return minify(content,
+        resp = minify(content,
                       remove_comments=True,
                       reduce_empty_attributes=True,
                       remove_optional_attribute_quotes=False)
+
+        logger.debug("Response minifier: {}".format(resp.get_data()))
+        return resp
 
     @staticmethod
     def compress(content):
@@ -179,7 +194,8 @@ class FlaskOptimize(object):
         resp = Response()
         if isinstance(content, Response):
             resp = content
-            content = resp.data
+            content = resp.get_data()
+            #logger.debug("Response compress: {}".format(resp))
 
         if not IS_PYTHON_3 and isinstance(content, unicode):
             content = content.encode('utf8')
@@ -187,7 +203,8 @@ class FlaskOptimize(object):
         if IS_PYTHON_3:
             gzip_buffer = BytesIO()
             gzip_file = gzip.GzipFile(fileobj=gzip_buffer, mode='wb')
-            gzip_file.write(bytes(content, 'utf-8'))
+            #gzip_file.write(bytes(content, 'utf-8'))
+            gzip_file.write(content)
         else:
             gzip_buffer = StringIO()
             gzip_file = gzip.GzipFile(fileobj=gzip_buffer, mode='wb')
@@ -198,6 +215,8 @@ class FlaskOptimize(object):
         resp.headers['Content-Encoding'] = 'gzip'
         resp.headers['Vary'] = 'Accept-Encoding'
         resp.set_data(gzip_buffer.getvalue())
+
+        logger.debug("Response compress: {}".format(resp.get_data()))
 
         return resp
 
@@ -219,13 +238,9 @@ class FlaskOptimize(object):
             h['Access-Control-Allow-Methods'] = current_app.make_default_options_response().headers['allow']
             h['Access-Control-Max-Age'] = '21600'
 
+            logger.debug("Response crossdomain: {}".format(resp.get_data()))
+
             return resp
 
         return content
 
-
-if __name__ == '__main__':
-    flask_optimize = FlaskOptimize()
-    flask_optimize.optimize('html')
-    flask_optimize.optimize('json')
-    flask_optimize.optimize('text')

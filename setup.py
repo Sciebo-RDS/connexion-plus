@@ -24,7 +24,8 @@ setup(
           'requests',
           'opentracing-instrumentation',
           'Flask-Opentracing',
-          'htmlmin'
+          'htmlmin',
+          'flask-cors'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      
