@@ -192,10 +192,14 @@ class FlaskOptimize(object):
         Compress str, unicode content using gzip
         """
         resp = Response()
+        
         if isinstance(content, Response):
             resp = content
             content = resp.get_data()
             #logger.debug("Response compress: {}".format(resp))
+        
+        before_len = len(content)
+
 
         if not IS_PYTHON_3 and isinstance(content, unicode):
             content = content.encode('utf8')
@@ -216,7 +220,7 @@ class FlaskOptimize(object):
         resp.headers['Vary'] = 'Accept-Encoding'
         resp.set_data(gzip_buffer.getvalue())
 
-        logger.debug("Response compress: {}".format(resp.get_data()))
+        logger.debug("Reduce size by {} bytes".format(before_len - len(resp.get_data())))
 
         return resp
 
