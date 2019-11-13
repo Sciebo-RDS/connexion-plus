@@ -31,7 +31,9 @@ from connexion_plus import App
 
 Currently, all opentracing implementation (e.g. [jaeger-client](https://pypi.org/project/jaeger-client/)) are supported for tracing. But this library use a third party function, that only supports Flask. If you want to use it, you have to initialize the client before you start your connexion app and give it via the `tracer`-parameter to the `connexion_plus` App, where the magic happens.
 
-The following example uses jaeger-client (`pip install jaeger-client`) implementation.
+If you want to use a default tracer, you can use `use_tracer=True` simply.
+
+The following example uses jaeger-client (`pip install jaeger-client`) implementation. (Currently installs with connexion-plus per default)
 
 ```python
 from connexion_plus import App
@@ -92,7 +94,7 @@ config = jConfig(
     )
 jaeger_tracer = config.initialize_tracer()
 
-app = App(__name__, use_tracer=jaeger_tracer, use_metric=True, use_logging_level=logging.DEBUG)
+app = App(name, use_tracer=config.initialize_tracer(), use_metric=True, use_optimizer=True, use_cors=True, use_logging_level=logging.DEBUG)
 app.add_api('openapi.yaml', resolver=RestyResolver('api'))
 ```
 
@@ -107,12 +109,11 @@ import Flasktracing
 FlaskTracing.get_span(request)
 ```
 
-If you get a collision of your view-functions, you can use from `from connexion-plus.MultipleResourceResolver import MultipleResourceResolver` as a replacement for RestyResolver to get better control of multi resource path e.g. /resource1/{id1}/resource2/{id2} tries to find the classes *Resource1Resource2* or *resource1resource2* in the given "api" folder.
+If you get a collision of your view-functions, you can use `from connexion-plus.MultipleResourceResolver import MultipleResourceResolver` as a replacement for RestyResolver to get better control of multi resource path e.g. /resource1/{id1}/resource2/{id2} tries to find the classes *Resource1Resource2* or *resource1resource2* in the given "api" folder.
 
 ## Examples
 
-You can find more examples in the [repo](https://github.com/Heiss/connexion-plus/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
-
+You can find more examples in the [repo](https://github.com/Heiss/connexion-plus/tree/master/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
 Please use *Tutorial2* if you want a complete usage example.
 
 ## Research data services
