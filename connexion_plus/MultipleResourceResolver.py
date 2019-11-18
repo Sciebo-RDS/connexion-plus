@@ -50,9 +50,12 @@ class MultipleResourceResolver(RestyResolver):
             for s in split:
                 # find the parameter, where a variable was defined to exlude it in resource_name
                 pattern = re.compile(r"\{[a-zA-Z-_]+\}")
-                if s and pattern.search(s) is None:
-                    count_resource += 1 # count up the founded resource
-                    resource_name += s.title()
+                if s:
+                    if pattern.search(s) is None:
+                        count_resource += 1 # count up the founded resource
+                        resource_name += s.title()
+                    else:
+                        count_parameters += 1
 
             if x_router_controller:
                 name = x_router_controller
@@ -60,9 +63,6 @@ class MultipleResourceResolver(RestyResolver):
             elif resource_name:
                 resource_controller_name = resource_name.replace('-', '_')
                 name += '.' + resource_controller_name
-
-            # calc parameters count
-            count_parameters = len(split) - count_resource
 
             return name
 
@@ -72,7 +72,7 @@ class MultipleResourceResolver(RestyResolver):
 
             is_collection_endpoint = \
                 method.lower() == 'get' \
-                and count_resource > count_parameters # if more resources than parameters, the user wants to use search
+                and count_resource > count_parameters
 
             return self.collection_endpoint_name if is_collection_endpoint else method.lower()
 
