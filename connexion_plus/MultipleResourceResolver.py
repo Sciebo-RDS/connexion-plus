@@ -31,6 +31,9 @@ class MultipleResourceResolver(RestyResolver):
             r'^/?(?P<resource_name>([\w\-](?<!/))*)(?P<trailing_slash>/*)(?P<extended_path>.*)$', operation.path
         )
 
+        count_resource = 0
+        count_parameters = 0
+
         def get_controller_name():
             x_router_controller = operation.router_controller
 
@@ -47,6 +50,7 @@ class MultipleResourceResolver(RestyResolver):
                 # find the parameter, where a variable was defined to exlude it in resource_name
                 pattern = re.compile(r"\{[a-zA-Z-_]+\}")
                 if s and pattern.search(s) is None:
+                    count_resource += 1 # count up the founded resource
                     resource_name += s.title()
 
             if x_router_controller:
@@ -56,6 +60,9 @@ class MultipleResourceResolver(RestyResolver):
                 resource_controller_name = resource_name.replace('-', '_')
                 name += '.' + resource_controller_name
 
+            # calc parameters count
+            count_parameters = len(split) - count_resource
+
             return name
 
         def get_function_name():
@@ -63,8 +70,7 @@ class MultipleResourceResolver(RestyResolver):
 
             is_collection_endpoint = \
                 method.lower() == 'get' \
-                and path_match.group('resource_name') \
-                and not path_match.group('extended_path')
+                and count_resource < count_parameters #if more parameters than resources, the user wants to use search
 
             return self.collection_endpoint_name if is_collection_endpoint else method.lower()
 
