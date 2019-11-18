@@ -35,6 +35,7 @@ class MultipleResourceResolver(RestyResolver):
         count_parameters = 0
 
         def get_controller_name():
+            nonlocal count_parameters, count_resource
             x_router_controller = operation.router_controller
 
             #chars = re.escape(string.punctuation)
@@ -66,6 +67,7 @@ class MultipleResourceResolver(RestyResolver):
             return name
 
         def get_function_name():
+            nonlocal count_parameters, count_resource
             method = operation.method
 
             is_collection_endpoint = \
