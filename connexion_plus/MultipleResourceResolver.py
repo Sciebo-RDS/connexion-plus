@@ -70,7 +70,7 @@ class MultipleResourceResolver(RestyResolver):
 
             is_collection_endpoint = \
                 method.lower() == 'get' \
-                and count_resource < count_parameters #if more parameters than resources, the user wants to use search
+                and count_resource < count_parameters #if more parameters than resources, the user wants to use get
 
             return self.collection_endpoint_name if is_collection_endpoint else method.lower()
 
