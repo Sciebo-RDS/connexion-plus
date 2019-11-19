@@ -4,9 +4,8 @@ import sys
 import gzip
 import time
 from htmlmin.main import minify
-from flask import request, Response, make_response, current_app, json, wrappers
+from flask import Flask, request, Response, make_response, current_app, json, wrappers
 from functools import update_wrapper, wraps
-from flask import Flask
 import logging
 
 logger = logging.getLogger('')
@@ -148,8 +147,10 @@ class FlaskOptimize(object):
 
         # compress, if its not suppressed
         if (self.config["compress"] and not hasattr(request, "opt_do_not_compress")):
-            logger.debug("Optimizer: compress response.")
-            resp = self.validate(self.compress, resp)
+            accept_encoding = request.headers.get('Accept-Encoding', '')
+            if "gzip" in accept_encoding:
+                logger.debug("Optimizer: compress response.")
+                resp = self.validate(self.compress, resp)
 
         # period_cache is bigger then 0, if request.opt_cache_timeout was set.
         if period_cache > 0:
