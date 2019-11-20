@@ -4,11 +4,11 @@ from flask import Flask
 from connexion import FlaskApp
 
 class App(FlaskApp):
-    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG, use_optimizer=None, use_cors=None, all=False):
+    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG, use_optimizer=None, use_cors=None, all=False, *args, **kwargs):
         """
         Initialize Flask App with multiple microservice and easier usability features.
         """
-        super().__init__(name)
+        super().__init__(name, *args, **kwargs)
         logger = logging.getLogger("")
 
         self.metrics = None

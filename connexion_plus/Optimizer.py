@@ -57,7 +57,8 @@ class FlaskOptimize(object):
     def set_cache_timeout(timeout=86400):
         """
         Decorator to set the cache for the method.
-        This is the only optimization, which have to be enabled manually
+        This is the only optimization, which have to be enabled manually.
+        Defaults to 24 hours.
         """
 
         def decorator(f):
@@ -103,6 +104,7 @@ class FlaskOptimize(object):
         return decorator
 
     def clear_timestamps(self):
+        """Not currently used."""
         tmp_dic = {}
 
         # FIXME: parallize me
