@@ -111,6 +111,10 @@ FlaskTracing.get_span(request)
 
 If you get a collision of your view-functions, you can use `from connexion-plus.MultipleResourceResolver import MultipleResourceResolver` as a replacement for RestyResolver to get better control of multi resource path e.g. /resource1/{id1}/resource2/{id2} tries to find the classes *Resource1Resource2* or *resource1resource2* in the given "api" folder.
 
+### Importing Multiple Resources
+
+If you want to make usage of multiple resource in a single URL (e.g. /Res1/{Para1}/Res2), you can use the `from connexion-plus import MultiResourceResolver` as your connexion resolver. This resolves the example: `/Res1/{Para1}/Res2 resolves in Res1.Res2` and as a convenient function, it resolves also `/Res1/{Para1}/Res2 resolves in Res1Res2`, so you can choose both. The first one searches for folders and at last a file `Res1/Res2.py`. The second searches a file with this name `Res1Res2.py`. Currently no classes inside the files are supported.
+
 ## Examples
 
 You can find more examples in the [repo](https://github.com/Heiss/connexion-plus/tree/master/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
