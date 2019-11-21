@@ -115,6 +115,8 @@ If you get a collision of your view-functions, you can use `from connexion-plus.
 
 If you want to make usage of multiple resource in a single URL (e.g. /Res1/{Para1}/Res2), you can use the `from connexion-plus import MultiResourceResolver` as your connexion resolver. This resolves the example: `/Res1/{Para1}/Res2 resolves in Res1.Res2` and as a convenient function, it resolves also `/Res1/{Para1}/Res2 resolves in Res1Res2`, so you can choose both. The first one searches for folders and at last a file `Res1/Res2.py`. The second searches a file with this name `Res1Res2.py`. Currently no classes inside the files are supported.
 
+If you want to add Methods to a resource (e.g. Res1 should answer for GET and POST), you have to add an `__init__.py` to the folder and import there your resource-file `from .Res1 import *`. If you use the second method, you don't have a folder and a file with the name `Res1`, so you don't need this workaround.
+
 ## Examples
 
 You can find more examples in the [repo](https://github.com/Heiss/connexion-plus/tree/master/examples). *Tutorial1* is a simple small (without bonuscode) script without an openapi definition.
