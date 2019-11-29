@@ -54,3 +54,6 @@ class Test_Util(unittest.TestCase):
         oai_list = [
             "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v2.0/yaml/petstore.yaml", "tests/petstore.yaml"]
         self.assertEqual(Util.load_oai(oai_list), self.oai_list)
+
+        strlist = ";".join(oai_list)
+        self.assertEqual(Util.load_oai(strlist), self.oai_list)
