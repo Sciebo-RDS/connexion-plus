@@ -1,10 +1,11 @@
 import logging
-from flask import Flask
+from flask import Flask, jsonify
 
 from connexion import FlaskApp
 
+
 class App(FlaskApp):
-    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG, use_optimizer=None, use_cors=None, all=False, *args, **kwargs):
+    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG, use_optimizer=None, use_cors=None, use_default_error=None, all=False, *args, **kwargs):
         """
         Initialize Flask App with multiple microservice and easier usability features.
         """
@@ -15,17 +16,44 @@ class App(FlaskApp):
         self.tracing = None
         self.optimize = None
         self.cors = None
+        self.default_errorhandler = None
+
+        if all is True:
+            use_tracer = True
+            use_metric = True
+            use_optimizer = True
+            use_cors = True
+            use_default_error = True
 
         logger.info("--- Start Connexion-Plus ---")
 
         if not isinstance(self.app, (Flask, FlaskApp)):
-            logger.warning("Given App is not flask, so it cannot get any functionality added from this lib currently.")
+            logger.warning(
+                "Given App is not flask, so it cannot get any functionality added from this lib currently.")
             return
+
+        # add default error
+        if use_default_error is not None and use_default_error:
+            from werkzeug.exceptions import HTTPException
+
+            @self.app.errorhandler(Exception)
+            def handle_error(e):
+                code = 500
+                if isinstance(e, HTTPException):
+                    code = e.code
+
+                error = {
+                    "error": e.__class__.__name__,
+                    "http_code": code,
+                    "message": str(e),
+                }
+                return jsonify(error), code
+            self.default_errorhandler = handle_error
 
         # add optimizer
         if use_optimizer is not None and use_optimizer is not False:
             from .Optimizer import FlaskOptimize
-            
+
             config = {"compress": True, "minify": True}
             if isinstance(use_optimizer, dict):
                 config = use_optimizer
@@ -41,7 +69,7 @@ class App(FlaskApp):
                 self.cors = CORS(self.app, resources=use_cors)
             else:
                 self.cors = CORS(self.app)
-            
+
             logger.info("CORS added.")
 
         # add prometheus
@@ -69,7 +97,8 @@ class App(FlaskApp):
                     config = jConfig(
                         config={},
                         service_name="MicroserviceConnexionPlus",
-                        metrics_factory=PrometheusMetricsFactory(namespace="MicroserviceConnexionPlus")
+                        metrics_factory=PrometheusMetricsFactory(
+                            namespace="MicroserviceConnexionPlus")
                     )
                 else:
                     config = jConfig(
@@ -78,10 +107,10 @@ class App(FlaskApp):
                     )
             else:
                 logger.info("Tracer given and will be used.")
-            
+
             tracer_obj = use_tracer if config is None else config.initialize_tracer()
             self.tracing = FlaskTracing(tracer_obj, True, self.app)
-            
+
             # add tracer to everything to support spans through multiple microservices via rpc-calls
             from opentracing_instrumentation.client_hooks import install_all_patches
             install_all_patches()
@@ -97,4 +126,3 @@ class App(FlaskApp):
             logger.info("Tracer added.")
 
         logger.info("--- Finished Connexion-Plus ---")
-
