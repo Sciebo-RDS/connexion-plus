@@ -21,8 +21,8 @@ If you want to know more about the used libraries, please go to the correspondin
 - [requests](https://pypi.org/project/requests/)
 - [prometheus-flask-exporter](https://pypi.org/project/prometheus-flask-exporter/)
 
-
 ## Importing
+
 ```python
 from connexion_plus import App
 ```
@@ -74,6 +74,10 @@ from connexion_plus import App
 
 app = App(__name__, use_metric=True)
 ```
+
+## Use a default error handler
+
+For a faster implementation, you can use a default error handler. Set the parameter `use_default_handler` to True for use a simple default handler. Otherwise give a function / method to this parameter, which handles your exceptions.
 
 ## Complete example
 

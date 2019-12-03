@@ -33,22 +33,26 @@ class App(FlaskApp):
             return
 
         # add default error
-        if use_default_error is not None and use_default_error:
-            from werkzeug.exceptions import HTTPException
+        if use_default_error is not None and use_default_error is not False:
+            if callable(use_default_error):
+                self.default_errorhandler = use_default_error
+            
+            else:
+                from werkzeug.exceptions import HTTPException
 
-            @self.app.errorhandler(Exception)
-            def handle_error(e):
-                code = 500
-                if isinstance(e, HTTPException):
-                    code = e.code
+                @self.app.errorhandler(Exception)
+                def handle_error(e):
+                    code = 500
+                    if isinstance(e, HTTPException):
+                        code = e.code
 
-                error = {
-                    "error": e.__class__.__name__,
-                    "http_code": code,
-                    "message": str(e),
-                }
-                return jsonify(error), code
-            self.default_errorhandler = handle_error
+                    error = {
+                        "error": e.__class__.__name__,
+                        "http_code": code,
+                        "message": str(e),
+                    }
+                    return jsonify(error), code
+                self.default_errorhandler = handle_error
 
         # add optimizer
         if use_optimizer is not None and use_optimizer is not False:
