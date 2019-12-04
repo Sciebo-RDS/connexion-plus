@@ -48,7 +48,7 @@ class App(FlaskApp):
         # add default error
         if use_default_error is not None and use_default_error is not False:
             if callable(use_default_error):
-                # FIXME add errorhandler to function
+                self.app.register_error_handler(Exception, use_default_error)
                 self.default_errorhandler = use_default_error
 
             else:
@@ -120,14 +120,14 @@ class App(FlaskApp):
                     from jaeger_client.metrics.prometheus import PrometheusMetricsFactory
                     config = jConfig(
                         config={},
-                        service_name="MicroserviceConnexionPlus",
+                        service_name=f"{name}ConnexionPlus",
                         metrics_factory=PrometheusMetricsFactory(
-                            namespace="MicroserviceConnexionPlus")
+                            namespace=f"{name}ConnexionPlus")
                     )
                 else:
                     config = jConfig(
                         config={},
-                        service_name="MicroserviceConnexionPlus",
+                        service_name=f"{name}ConnexionPlus",
                     )
             else:
                 logger.info("Tracer given and will be used.")
