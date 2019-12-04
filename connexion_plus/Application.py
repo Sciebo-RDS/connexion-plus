@@ -73,6 +73,7 @@ class App(FlaskApp):
 
             self.scheduler = APScheduler()
             self.scheduler.init_app(self.app)
+            self.scheduler.start()
 
         # add optimizer
         if use_optimizer is not None and use_optimizer is not False:
