@@ -25,7 +25,8 @@ setup(
           'opentracing-instrumentation',
           'Flask-Opentracing',
           'htmlmin',
-          'flask-cors'
+          'flask-cors',
+          'Flask-APScheduler'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      

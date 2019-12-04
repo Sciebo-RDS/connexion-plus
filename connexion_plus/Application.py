@@ -5,9 +5,20 @@ from connexion import FlaskApp
 
 
 class App(FlaskApp):
-    def __init__(self, name, use_tracer=None, use_metric=False, use_logging_level=logging.DEBUG, use_optimizer=None, use_cors=None, use_default_error=None, all=False, *args, **kwargs):
+    def __init__(
+        self, name,
+        use_tracer=None,
+        use_metric=False,
+        use_logging_level=logging.DEBUG,
+        use_optimizer=None,
+        use_cors=None,
+        use_default_error=None,
+        use_scheduler=None,
+        all=False,
+        *args, **kwargs
+    ):
         """
-        Initialize Flask App with multiple microservice and easier usability features.
+        Initialize Flask App with multiple microservice-related and usability features.
         """
         super().__init__(name, *args, **kwargs)
         logger = logging.getLogger("")
@@ -17,6 +28,7 @@ class App(FlaskApp):
         self.optimize = None
         self.cors = None
         self.default_errorhandler = None
+        self.scheduler = None
 
         if all is True:
             use_tracer = True
@@ -24,6 +36,7 @@ class App(FlaskApp):
             use_optimizer = True
             use_cors = True
             use_default_error = True
+            use_scheduler = True
 
         logger.info("--- Start Connexion-Plus ---")
 
@@ -35,8 +48,9 @@ class App(FlaskApp):
         # add default error
         if use_default_error is not None and use_default_error is not False:
             if callable(use_default_error):
+                # FIXME add errorhandler to function
                 self.default_errorhandler = use_default_error
-            
+
             else:
                 from werkzeug.exceptions import HTTPException
 
@@ -53,6 +67,12 @@ class App(FlaskApp):
                     }
                     return jsonify(error), code
                 self.default_errorhandler = handle_error
+
+        if use_scheduler is not None and use_scheduler is not False:
+            from flask_apscheduler import APScheduler
+
+            self.scheduler = APScheduler()
+            self.scheduler.init_app(self.app)
 
         # add optimizer
         if use_optimizer is not None and use_optimizer is not False:
