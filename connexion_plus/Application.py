@@ -47,9 +47,11 @@ class App(FlaskApp):
 
         # add default error
         if use_default_error is not None and use_default_error is not False:
+            logger.info("Add default error handler to Flask...")
             if callable(use_default_error):
                 self.app.register_error_handler(Exception, use_default_error)
                 self.default_errorhandler = use_default_error
+                logger.info("use given handler.")
 
             else:
                 from werkzeug.exceptions import HTTPException
@@ -67,8 +69,10 @@ class App(FlaskApp):
                     }
                     return jsonify(error), code
                 self.default_errorhandler = handle_error
+                logger.info("use default one")
 
         if use_scheduler is not None and use_scheduler is not False:
+            logger.info("Add background scheduler to Flask")
             from flask_apscheduler import APScheduler
 
             self.scheduler = APScheduler()
@@ -77,22 +81,27 @@ class App(FlaskApp):
 
         # add optimizer
         if use_optimizer is not None and use_optimizer is not False:
+            logger.info("Add optimizer to Flask...")
             from .Optimizer import FlaskOptimize
 
             config = {"compress": True, "minify": True}
             if isinstance(use_optimizer, dict):
                 config = use_optimizer
 
+            logger.info("use config {}.".format(config))
+
             self.optimize = FlaskOptimize(self.app, config)
-            logger.info("Optimizer added.")
 
         # add CORS
         if use_cors is not None and use_cors is not False:
+            logger.info("Add cors to Flask...")
             from flask_cors import CORS
 
             if isinstance(use_cors, dict):
+                logger.info("use given settings.")
                 self.cors = CORS(self.app, resources=use_cors)
             else:
+                logger.info("use default ones.")
                 self.cors = CORS(self.app)
 
             logger.info("CORS added.")
@@ -103,17 +112,18 @@ class App(FlaskApp):
 
             from prometheus_flask_exporter import PrometheusMetrics
             self.metrics = PrometheusMetrics(self.app)
-            logger.info("Prometheus added.")
+            logger.info("Add prometheus to Flask")
 
         # add tracing
         if use_tracer is not None and use_tracer is not False:
+            logger.info("Add opentracing to Flask...")
             # add tracing to all routes in flaskApp
             from flask_opentracing import FlaskTracing
             import opentracing
 
             config = None
             if not isinstance(use_tracer, opentracing.Tracer):
-                logger.info("Tracer should be used, but no object was given.")
+                logger.info("use default one.")
                 from jaeger_client import Config as jConfig
 
                 if isinstance(use_metric, bool) and use_metric is True:
@@ -126,12 +136,13 @@ class App(FlaskApp):
                             namespace=f"{name}ConnexionPlus")
                     )
                 else:
+                    logger.info("no metrics for tracer configured.")
                     config = jConfig(
                         config={},
                         service_name=f"{name}ConnexionPlus",
                     )
             else:
-                logger.info("Tracer given and will be used.")
+                logger.info("use given tracer config.")
 
             tracer_obj = use_tracer if config is None else config.initialize_tracer()
             self.tracing = FlaskTracing(tracer_obj, True, self.app)
@@ -148,6 +159,6 @@ class App(FlaskApp):
             th.setLevel(use_logging_level)
 
             logging.getLogger('').addHandler(th)
-            logger.info("Tracer added.")
+            logger.info("Finished Tracer adding.")
 
         logger.info("--- Finished Connexion-Plus ---")
