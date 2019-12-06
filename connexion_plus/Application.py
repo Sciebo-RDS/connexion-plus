@@ -48,11 +48,11 @@ class App(FlaskApp):
         # add default error
         if use_default_error is not None and use_default_error is not False:
             from werkzeug.exceptions import HTTPException
+            from werkzeug.exceptions import default_exceptions
+
             logger.info("Add default error handler to Flask...")
 
             if callable(use_default_error):
-                self.app.register_error_handler(Exception, use_default_error)
-                self.app.register_error_handler(HTTPException, use_default_error)
                 self.default_errorhandler = use_default_error
 
                 logger.info("use given handler.")
@@ -71,10 +71,16 @@ class App(FlaskApp):
                     return jsonify(error), code
                 
                 self.default_errorhandler = handle_error
-                self.app.register_error_handler(Exception, handle_error)
-                self.app.register_error_handler(HTTPException, handle_error)
 
                 logger.info("use default one")
+            
+            # register for all json exceptions
+            self.app.register_error_handler(Exception, self.default_errorhandler)
+
+            # register handler for all http exceptions
+            for ex in default_exceptions:
+                self.app.register_error_handler(ex, self.default_errorhandler)
+
 
 
         if use_scheduler is not None and use_scheduler is not False:
