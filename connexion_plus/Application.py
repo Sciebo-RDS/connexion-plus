@@ -14,7 +14,7 @@ class App(FlaskApp):
         use_cors=None,
         use_default_error=None,
         use_scheduler=None,
-        all=False,
+        all=None,
         *args, **kwargs
     ):
         """
@@ -30,7 +30,7 @@ class App(FlaskApp):
         self.default_errorhandler = None
         self.scheduler = None
 
-        if all is True:
+        if all is not None and all is not False:
             use_tracer = True
             use_metric = True
             use_optimizer = True
@@ -47,16 +47,17 @@ class App(FlaskApp):
 
         # add default error
         if use_default_error is not None and use_default_error is not False:
+            from werkzeug.exceptions import HTTPException
             logger.info("Add default error handler to Flask...")
+
             if callable(use_default_error):
                 self.app.register_error_handler(Exception, use_default_error)
+                self.app.register_error_handler(HTTPException, use_default_error)
                 self.default_errorhandler = use_default_error
+
                 logger.info("use given handler.")
 
             else:
-                from werkzeug.exceptions import HTTPException
-
-                @self.app.errorhandler(Exception)
                 def handle_error(e):
                     code = 500
                     if isinstance(e, HTTPException):
@@ -65,11 +66,16 @@ class App(FlaskApp):
                     error = {
                         "error": e.__class__.__name__,
                         "http_code": code,
-                        "message": str(e),
+                        "description": str(e),
                     }
                     return jsonify(error), code
+                
                 self.default_errorhandler = handle_error
+                self.app.register_error_handler(Exception, handle_error)
+                self.app.register_error_handler(HTTPException, handle_error)
+
                 logger.info("use default one")
+
 
         if use_scheduler is not None and use_scheduler is not False:
             logger.info("Add background scheduler to Flask")
