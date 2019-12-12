@@ -69,19 +69,18 @@ class App(FlaskApp):
                         "description": str(e),
                     }
                     return jsonify(error), code
-                
+
                 self.default_errorhandler = handle_error
 
                 logger.info("use default one")
-            
+
             # register for all json exceptions
-            self.app.register_error_handler(Exception, self.default_errorhandler)
+            self.app.register_error_handler(
+                Exception, self.default_errorhandler)
 
             # register handler for all http exceptions
             for ex in default_exceptions:
                 self.app.register_error_handler(ex, self.default_errorhandler)
-
-
 
         if use_scheduler is not None and use_scheduler is not False:
             logger.info("Add background scheduler to Flask")
@@ -96,9 +95,12 @@ class App(FlaskApp):
             logger.info("Add optimizer to Flask...")
             from .Optimizer import FlaskOptimize
 
-            config = {"compress": True, "minify": True}
+            config = {"compress": False, "minify": False}
             if isinstance(use_optimizer, dict):
-                config = use_optimizer
+                config.update(use_optimizer)
+
+            if isinstance(use_optimizer, bool) and use_optimizer:
+                config.update({"compress": True, "minify": True})
 
             logger.info("use config {}.".format(config))
 
