@@ -115,6 +115,13 @@ FlaskTracing.get_span(request)
 
 If you get a collision of your view-functions, you can use `from connexion-plus.MultipleResourceResolver import MultipleResourceResolver` as a replacement for RestyResolver to get better control of multi resource path e.g. /resource1/{id1}/resource2/{id2} tries to find the classes *Resource1Resource2* or *resource1resource2* in the given "api" folder.
 
+## Use of optimizer
+
+If you want to use the optimizer or use custom configs for single routes, you can use the FlaskOptimize class `from connexion_plus import FlaskOptimize`.
+This class has the methods `do_not_minify` (the decorated route will not minified before send), `do_not_compress` (the decorated route will not compressed before send) and `set_cache_timeout(seconds)` (default 24h) (the response from the decorated route will be cached until `seconds`).
+
+Currently it is only be possible to deactivate the global config `use_optimizer` and not activate single routes with e.g. `minify`. This could be your first contributation to this project. :)
+
 ### Importing Multiple Resources
 
 If you want to make usage of multiple resource in a single URL (e.g. /Res1/{Para1}/Res2), you can use the `from connexion-plus import MultiResourceResolver` as your connexion resolver. This resolves the example: `/Res1/{Para1}/Res2 resolves in Res1.Res2` and as a convenient function, it resolves also `/Res1/{Para1}/Res2 resolves in Res1Res2`, so you can choose both. The first one searches for folders and at last a file `Res1/Res2.py`. The second searches a file with this name `Res1Res2.py`. Currently no classes inside the files are supported.
