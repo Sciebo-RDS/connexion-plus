@@ -17,8 +17,23 @@ class App(FlaskApp):
         all=None,
         *args, **kwargs
     ):
+        # TODO: Add more text here for current situation
         """
         Initialize Flask App with multiple microservice-related and usability features.
+
+        None is for deactivating, so it equals to False.
+
+        *use_tracer* must be of type: bool (True for defaults, False for deactivating), 
+        opentracing.Tracer (use it for configuration), dict (use default opentracing.Tracer and the given dict as config) or defaults: None
+
+        *use_metric* must be of type: bool (True for defaults, False for deactivating) or defaults: None
+
+        *use_logging_level* must be of type: logging.{INFO, WARNING, ERROR, DEBUG}, defaults: DEBUG
+        *use_optimizer* must be of type: bool (True for defaults, False for deactivating) or defaults: None
+        *use_cors* must be of type: bool (True for defaults, False for deactivating) or defaults: None
+        *use_default_error* must be of type: bool (True for defaults, False for deactivating) or defaults: None
+        *use_scheduler* must be of type: bool (True for defaults, False for deactivating) or defaults: None
+        *all* must be of type: bool (True for use all functions with defaults, False for deactivating all functions) or defaults: None
         """
         super().__init__(name, *args, **kwargs)
         logger = logging.getLogger("")
@@ -140,11 +155,26 @@ class App(FlaskApp):
                 logger.info("use default one.")
                 from jaeger_client import Config as jConfig
 
+                tracer_config = {
+                    'sampler': {
+                        'type': 'const',
+                        'param': 1,
+                    },
+                    'local_agent': {
+                        'reporting_host': "127.0.0.1",
+                        'reporting_port': 5775,
+                    },
+                    'logging': True,
+                }
+
+                if isinstance(use_tracer, dict):
+                    tracer_config = use_tracer
+
                 if isinstance(use_metric, bool) and use_metric is True:
                     logger.info("Use metrics for tracer.")
                     from jaeger_client.metrics.prometheus import PrometheusMetricsFactory
                     config = jConfig(
-                        config={},
+                        config=tracer_config,
                         service_name=f"{name}ConnexionPlus",
                         metrics_factory=PrometheusMetricsFactory(
                             namespace=f"{name}ConnexionPlus")
@@ -152,7 +182,7 @@ class App(FlaskApp):
                 else:
                     logger.info("no metrics for tracer configured.")
                     config = jConfig(
-                        config={},
+                        config=tracer_config,
                         service_name=f"{name}ConnexionPlus",
                     )
             else:
