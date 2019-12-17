@@ -83,6 +83,7 @@ class App(FlaskApp):
                         "http_code": code,
                         "description": str(e),
                     }
+                    logger.error(error)
                     return jsonify(error), code
 
                 self.default_errorhandler = handle_error
