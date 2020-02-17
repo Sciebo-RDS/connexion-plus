@@ -81,9 +81,9 @@ class App(FlaskApp):
                     error = {
                         "error": e.__class__.__name__,
                         "http_code": code,
-                        "description": str(e),
+                        "description": str(e)
                     }
-                    logger.error(error)
+                    logger.exception(error)
                     return jsonify(error), code
 
                 self.default_errorhandler = handle_error
