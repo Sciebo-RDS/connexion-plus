@@ -13,12 +13,9 @@ jobs:
           with:
             python-version: 3.7
         - name: Install dependencies
-          run: |
-          python3 -m pip install --user --upgrade setuptools wheel
-          python3 -m pip install --user --upgrade twine
+          run: python3 -m pip install --user --upgrade setuptools wheel twine
         - name: Build source
-          run: |
-          python3 setup.py sdist bdist_wheel
+          run: python3 setup.py sdist bdist_wheel
         - name: Publish to PyPI
           uses: pypa/gh-action-pypi-publish@master
           with:
