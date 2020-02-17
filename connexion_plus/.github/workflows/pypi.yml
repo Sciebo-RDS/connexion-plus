@@ -1,0 +1,26 @@
+name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+
+on: push
+
+jobs:
+    build-n-publish:
+      name: Build and publish Python 🐍 distributions 📦 to PyPI
+      runs-on: ubuntu-18.04
+      steps:
+        - uses: actions/checkout@master
+        - name: Set up Python 3.7
+          uses: actions/setup-python@v1
+          with:
+            python-version: 3.7
+        - name: Install dependencies
+          run: |
+            python3 -m pip install --user --upgrade setuptools wheel
+            python3 -m pip install --user --upgrade twine
+        - name: Build source
+          run: |
+            python3 setup.py sdist bdist_wheel
+        - name: Publish to PyPI
+          uses: pypa/gh-action-pypi-publish@master
+          with:
+            user: __token__
+            password: ${{ secrets.pypi_password }}
