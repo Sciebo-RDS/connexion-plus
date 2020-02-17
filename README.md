@@ -1,4 +1,4 @@
-[![PyPI version](https://badge.fury.io/py/connexion-plus.svg)](https://badge.fury.io/py/connexion-plus)
+[![PyPI version](https://badge.fury.io/py/connexion-plus.svg)](https://badge.fury.io/py/connexion-plus)![Workflow Status](https://github.com/Sciebo-RDS/connexion-plus/workflows/Publish%20Python%20%F0%9F%90%8D%20distributions%20%F0%9F%93%A6%20to%20PyPI%20and%20TestPyPI/badge.svg)
 
 [Connexion](https://github.com/zalando/connexion) with benefits for microservices.
 
