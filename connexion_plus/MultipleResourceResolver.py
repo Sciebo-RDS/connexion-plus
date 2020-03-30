@@ -29,14 +29,14 @@ class MultipleResourceResolver(RestyResolver):
                 try:
                     return Resolution(self.resolve_function_from_operation_id(op), op)
                 except ResolverError as e:
-                    logger.error(e)
+                    logger.warning(e)
                     errors.append(e)
 
                 # check, if the user uses files for resources lower()
                 try:
                     return Resolution(self.resolve_function_from_operation_id(op.lower()), op)
                 except ResolverError as e:
-                    logger.error(e)
+                    logger.warning(e)
                     errors.append(e)
 
             raise errors[-1]
