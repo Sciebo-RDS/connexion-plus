@@ -6,3 +6,6 @@ init:
 upload:
 	python3 setup.py sdist bdist_wheel
 	twine upload dist/*
+
+clean:
+	rm -r dist src/*.egg-info build .coverage coverage.xml .pytest_cache *.egg-info
