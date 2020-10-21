@@ -15,7 +15,7 @@ class MultipleResourceResolver(RestyResolver):
         # set randomizer to not collide endpoint_names, so that parameters for resources are possible.
         # Otherwise the following example collides:
         #   /res1 [GET] and /res1/{id} [GET]
-        #operation._randomize_endpoint = 2
+        operation._randomize_endpoint = 2
 
         operation_id = self.resolve_operation_id(operation)    
 
