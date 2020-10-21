@@ -163,6 +163,8 @@ class App(FlaskApp):
                     if request.path != "/metrics":
                         return fn(*args, **kwargs)
 
+                return request_func
+
             FlaskTracing._before_request_fn = wrapper(FlaskTracing._before_request_fn)
             FlaskTracing._after_request_fn = wrapper(FlaskTracing._after_request_fn)
 
