@@ -165,9 +165,6 @@ class App(FlaskApp):
 
             FlaskTracing._before_request_fn = wrapper(FlaskTracing._before_request_fn)
             FlaskTracing._after_request_fn = wrapper(FlaskTracing._after_request_fn)
-            FlaskTracing.end_trace_with_error = wrapper(
-                FlaskTracing.end_trace_with_error
-            )
 
             config = None
             if not isinstance(use_tracer, opentracing.Tracer):
