@@ -165,7 +165,7 @@ class FlaskOptimize(object):
         return
 
     @staticmethod
-    def set_key(self, key_cache):
+    def set_key(key_cache):
         """
         Decorator to set the key for caching.
         """
