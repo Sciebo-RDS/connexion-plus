@@ -164,6 +164,7 @@ class FlaskOptimize(object):
         self._timestamp = tmp_dic
         return
 
+    @staticmethod
     def set_key(self, key_cache):
         """
         Decorator to set the key for caching.
