@@ -16,7 +16,8 @@ class App(FlaskApp):
         use_default_error=None,
         use_scheduler=None,
         all=None,
-        *args,
+        flaskName=None
+        * args,
         **kwargs,
     ):
         # TODO: Add more text here for current situation
@@ -37,9 +38,13 @@ class App(FlaskApp):
         *use_scheduler* must be of type: bool (True for defaults, False for deactivating) or defaults: None
         *all* must be of type: bool (True for use all functions with defaults, False for deactivating all functions) or defaults: None
         """
-        super().__init__(name, *args, **kwargs)
+        if flaskName is None:
+            flaskName = __name__
+
+        super().__init__(flaskName, *args, **kwargs)
         logger = logging.getLogger("")
 
+        self.name = name
         self.metrics = None
         self.tracing = None
         self.optimize = None
@@ -95,7 +100,8 @@ class App(FlaskApp):
                 logger.info("use default one")
 
             # register for all json exceptions
-            self.app.register_error_handler(Exception, self.default_errorhandler)
+            self.app.register_error_handler(
+                Exception, self.default_errorhandler)
 
             # register handler for all http exceptions
             for ex in default_exceptions:
@@ -165,8 +171,10 @@ class App(FlaskApp):
 
                 return request_func
 
-            FlaskTracing._before_request_fn = wrapper(FlaskTracing._before_request_fn)
-            FlaskTracing._after_request_fn = wrapper(FlaskTracing._after_request_fn)
+            FlaskTracing._before_request_fn = wrapper(
+                FlaskTracing._before_request_fn)
+            FlaskTracing._after_request_fn = wrapper(
+                FlaskTracing._after_request_fn)
 
             config = None
             if not isinstance(use_tracer, opentracing.Tracer):
@@ -174,7 +182,7 @@ class App(FlaskApp):
                 from jaeger_client import Config as jConfig
 
                 tracer_config = {
-                    "sampler": {"type": "const", "param": 1,},
+                    "sampler": {"type": "const", "param": 1, },
                     "local_agent": {
                         "reporting_host": "jaeger-agent",
                         "reporting_port": 5775,

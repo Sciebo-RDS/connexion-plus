@@ -20,10 +20,10 @@ else:
 
 class FlaskOptimize(object):
 
-    _cache = {}
-    _timestamp = {}
+    _cache = None
+    _timestamp = None
 
-    def __init__(self, app, config=None):
+    def __init__(self, app, config=None, rc=None):
         """
         Global config for flask optimize. 
 
@@ -32,6 +32,54 @@ class FlaskOptimize(object):
             config: global configure values
         """
         logger.info("Initialize FlaskOptimize...")
+
+        try:
+            from redis_pubsub_dict import RedisDict
+
+            # runs in RDS ecosystem, use redis as backend
+            if rc is None:
+                logger.debug("No redis client was given. Create one.")
+
+                startup_nodes = [
+                    {
+                        "host": os.getenv("REDIS_HOST", "localhost"),
+                        "port": os.getenv("REDIS_PORT", "6379"),
+                    }
+                ]
+
+                try:
+                    logger.debug("first try cluster")
+                    from rediscluster import RedisCluster
+
+                    rc = RedisCluster(
+                        startup_nodes=startup_nodes,
+                        decode_responses=True,
+                        skip_full_coverage_check=True,
+                        cluster_down_retry_attempts=1,
+                    )
+                    rc.cluster_info()  # provoke an error message
+                except Exception as e:
+                    logger.error(e)
+                    logger.debug("Cluster has an error, try standalone redis")
+                    from redis import Redis
+
+                    rc = Redis(
+                        **(startup_nodes[0]),
+                        db=0,
+                        decode_responses=True,
+                    )
+                    rc.info()  # provoke an error message
+
+            self._redis_key = "FlaskOptimize_Caching_{}".format(self.name)
+            self._cache = RedisDict(rc, self._redis_key)
+            self._timestamp = RedisDict(rc, self._redis_key)
+
+        except:
+            logger.debug(
+                "No redis client was given or found. Use local dicts.")
+            self._cache = {}
+            self._timestamp = {}
+
         if config is None:
             config = {
                 "compress": True,
@@ -116,29 +164,65 @@ class FlaskOptimize(object):
         self._timestamp = tmp_dic
         return
 
+    def set_key(self, key_cache):
+        """
+        Decorator to set the key for caching.
+        """
+
+        def decorator(f):
+            @wraps(f)
+            def func(*args, **kwargs):
+                request.key_cache = key_cache
+                return f(*args, **kwargs)
+
+            return func
+
+        return decorator
+
+    def set_key_inline(self, key_cache):
+        request.key_cache = key_cache
+
+    def clear_key(self, key_cache):
+        resp = self._cache[request.key_cache]
+        del self._cache[request.key_cache]
+        del self._timestamp[request.key_cache]
+        return resp
+
+    def set_cache_inline(self, content):
+        """Helps you, if you want to manipulate the cache dict, but do not want to serve from it.
+
+        Args:
+            content (String): The cached content.
+        """
+        self._cache[request.key_cache] = content
+
     def optimize_response(self, response):
         """
         Optimize the given response with minify html, set crossdomain for json, compress everything or optional caching the response.
         """
         resp = response
 
-        #self.clear_timestamps()
-        period_cache = request.opt_cache_timeout if hasattr(request, "opt_cache_timeout") and isinstance(request.opt_cache_timeout, int) else 0
+        # self.clear_timestamps()
+        period_cache = request.opt_cache_timeout if hasattr(
+            request, "opt_cache_timeout") and isinstance(request.opt_cache_timeout, int) else 0
 
         # init cached data
         now = time.time()
-        key_cache = request.method + request.url
+
+        if request.key_cache is None:
+            request.key_cache = request.method + request.url
 
         # if cache entry found, return it.
-        if period_cache > 0 and self._timestamp.get(key_cache) and self._timestamp.get(key_cache) > now:
-            logger.debug("Optimizer: Response from cache. Valid for {}s.".format(int(self._timestamp.get(key_cache) - now)))
-            return self._cache[key_cache]
+        if period_cache > 0 and self._timestamp.get(request.key_cache) and self._timestamp.get(request.key_cache) > now:
+            logger.debug("Optimizer: Response from cache. Valid for {}s.".format(
+                int(self._timestamp.get(request.key_cache) - now)))
+            return self._cache[request.key_cache]
 
         #resp = func(*args, **kwargs)
 
         # FIXME: remove this, because we use flask-cors
         # crossdomain
-        #if resp.mimetype.endswith('json'):
+        # if resp.mimetype.endswith('json'):
         #    logger.debug("Optimizer: JSON found. Crossdomain added.")
         #    resp = self.crossdomain(resp)
 
@@ -157,8 +241,8 @@ class FlaskOptimize(object):
         # period_cache is bigger then 0, if request.opt_cache_timeout was set.
         if period_cache > 0:
             logger.debug("Optimizer: response cached.")
-            self._cache[key_cache] = resp
-            self._timestamp[key_cache] = now + period_cache
+            self._cache[request.key_cache] = resp
+            self._timestamp[request.key_cache] = now + period_cache
 
         return resp
 
@@ -195,14 +279,13 @@ class FlaskOptimize(object):
         Compress str, unicode content using gzip
         """
         resp = Response()
-        
+
         if isinstance(content, Response):
             resp = content
             content = resp.get_data()
             #logger.debug("Response compress: {}".format(resp))
-        
-        before_len = len(content)
 
+        before_len = len(content)
 
         if not IS_PYTHON_3 and isinstance(content, unicode):
             content = content.encode('utf8')
@@ -223,7 +306,8 @@ class FlaskOptimize(object):
         resp.headers['Vary'] = 'Accept-Encoding'
         resp.set_data(gzip_buffer.getvalue())
 
-        logger.debug("Reduce size by {} bytes".format(before_len - len(resp.get_data())))
+        logger.debug("Reduce size by {} bytes".format(
+            before_len - len(resp.get_data())))
 
         return resp
 
@@ -250,4 +334,3 @@ class FlaskOptimize(object):
             return resp
 
         return content
-
