@@ -16,8 +16,8 @@ class App(FlaskApp):
         use_default_error=None,
         use_scheduler=None,
         all=None,
-        flaskName=None
-        * args,
+        flaskName=None,
+        *args,
         **kwargs,
     ):
         # TODO: Add more text here for current situation
