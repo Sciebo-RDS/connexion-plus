@@ -49,15 +49,13 @@ class FlaskOptimize(object):
 
                 try:
                     logger.debug("first try cluster")
-                    from rediscluster import RedisCluster
+                    from redis.cluster import Redis
 
-                    rc = RedisCluster(
-                        startup_nodes=startup_nodes,
+                    rc = Redis(
+                        **(startup_nodes[0]),
                         decode_responses=True,
-                        skip_full_coverage_check=True,
-                        cluster_down_retry_attempts=1,
                     )
-                    rc.cluster_info()  # provoke an error message
+                    rc.get_nodes()  # provoke an error message
                 except Exception as e:
                     logger.error(e)
                     logger.debug("Cluster has an error, try standalone redis")

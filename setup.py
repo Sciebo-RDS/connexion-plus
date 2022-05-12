@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
     name='connexion-plus',
     packages=['connexion_plus'],
-    version='0.45',
+    version='0.46',
     license='MIT',
     description='Connexion with benefits for microservices',
     long_description=readme,
@@ -27,9 +27,8 @@ setup(
         'htmlmin',
         'flask-cors',
         'Flask-APScheduler',
-        'redis-pubsub-dict',
+        'redis-pubsub-dict @ https://github.com/Sciebo-RDS/py-redis-pubsub-dict',
         'redis',
-        'redis-py-cluster',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
