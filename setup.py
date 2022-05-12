@@ -27,7 +27,7 @@ setup(
         'htmlmin',
         'flask-cors',
         'Flask-APScheduler',
-        'redis-pubsub-dict @ https://github.com/Sciebo-RDS/py-redis-pubsub-dict',
+        'redis-pubsub-dict-wo-cluster',
         'redis',
     ],
     classifiers=[
