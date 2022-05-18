@@ -44,7 +44,7 @@ class App(FlaskApp):
         super().__init__(flaskName, *args, **kwargs)
         logger = logging.getLogger("")
 
-        self.name = name
+        self.serviceName = name
         self.metrics = None
         self.tracing = None
         self.optimize = None
