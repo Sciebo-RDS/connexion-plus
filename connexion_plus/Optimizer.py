@@ -208,6 +208,9 @@ class FlaskOptimize(object):
         # init cached data
         now = time.time()
 
+        if not hasattr(request, "key_cache"):
+            request.key_cache = None
+            
         if request.key_cache is None:
             request.key_cache = request.method + request.url
 
