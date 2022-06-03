@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
     name='connexion-plus',
     packages=['connexion_plus'],
-    version='0.48',
+    version='0.49',
     license='MIT',
     description='Connexion with benefits for microservices',
     long_description=readme,

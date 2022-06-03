@@ -3,6 +3,7 @@
 import sys
 import gzip
 import time
+import os
 from htmlmin.main import minify
 from flask import Flask, request, Response, make_response, current_app, json, wrappers
 from functools import update_wrapper, wraps
@@ -53,6 +54,7 @@ class FlaskOptimize(object):
 
                     rc = Redis(
                         **(startup_nodes[0]),
+                        health_check_interval=30,
                         decode_responses=True,
                     )
                     rc.get_nodes()  # provoke an error message
@@ -64,6 +66,7 @@ class FlaskOptimize(object):
                     rc = Redis(
                         **(startup_nodes[0]),
                         db=0,
+                        health_check_interval=30,
                         decode_responses=True,
                     )
                     rc.info()  # provoke an error message
